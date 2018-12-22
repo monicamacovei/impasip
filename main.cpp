@@ -28,7 +28,7 @@ void iesireUrgenta()
 	}
 }
 
-int stanga, sus, width, height, latura, numar, alegere, player = 1;
+int stanga, sus, width, height, latura, numar, alegere, player = 1, stopComputer;
 bool gata;
 void meniu(int &alegere);
 void initMeniu();
@@ -184,19 +184,19 @@ void culoarepiese() { //monica
 	midy = getmaxheight() / 2;
 
 	rectangle(midx - 200, 150, midx + 200, 230);
-	outtextxy(midx - 30, (150 + 230) / 2 - 10, "Negru");
+	outtextxy(midx - 30, (150 + 230) / 2 - 10, "Verde");
 
 	rectangle(midx - 200, 250, midx + 200, 330);
 	outtextxy(midx - 20, (250 + 330) / 2 - 10, "Alb");
 
 	rectangle(midx - 200, 350, midx + 200, 430);
-	outtextxy(midx - 40, (350 + 430) / 2 - 10, "Albastru");
+	outtextxy(midx - 40, (350 + 430) / 2 - 10, "VERDE");
 
 	rectangle(midx - 200, 450, midx + 200, 530);
 	outtextxy(midx - 25, (450 + 530) / 2 - 10, "Rosu");
 
 	rectangle(midx - 200, 550, midx + 200, 630);
-	outtextxy(midx - 35, (550 + 630) / 2 - 10, "Turcoaz");
+	outtextxy(midx - 35, (550 + 630) / 2 - 10, "Portocaliu");
 
 	int x, y;
 	while (true) {
@@ -206,7 +206,7 @@ void culoarepiese() { //monica
 			y = mousey();
 
 			if ((x >= midx - 200 && x <= midx + 200 && y >= 150 && y <= 230) != 0) {//optiuni meniu
-				PIESA = BLACK;
+				PIESA = RGB(0, 255, 0);
 				break;
 			}
 
@@ -216,16 +216,16 @@ void culoarepiese() { //monica
 			}
 
 			if ((x >= midx - 200 && x <= midx + 200 && y >= 350 && y <= 430) != 0) {
-				PIESA = BLUE;
+				PIESA = RGB(100, 100, 0);
 				break;
 			}
 
 			if ((x >= midx - 200 && x <= midx + 200 && y >= 450 && y <= 530) != 0) {
-				PIESA = RED;
+				PIESA = RGB(250, 0, 0);
 				break;
 			}
 			if ((x >= midx - 200 && x <= midx + 200 && y >= 550 && y <= 630) != 0) {
-				PIESA = CYAN;
+				PIESA = RGB(250,120,0);
 				break;
 			}
 		}
@@ -282,151 +282,212 @@ int verifCastigator(int player, int codPiesa) { //Monica - verifica daca a casti
 	return 1;
 }
 
-void mutarePiesa(int codPiesa) //Monica - mutare piesa pentru jucator vs jucator + afisare jucatori
-{
-	int linia1, coloana1, linia2, coloana2, x, y;
-	int x1, y1, x2, y2;
-	int xmijloc, ymijloc;
+void mutarePrimulJucator(int coloana1, int coloana2, int linia1, int linia2, int &ok) { //monica mutarea primului jucator
 	int midx;
-	bool mutareCorecta;
 	midx = getmaxwidth() / 2;
-	
-	if (player == 1) {
-		setcolor(FUNDAL);
-		outtextxy(midx - 50, 40, "Jucator 2");
-		setcolor(WHITE);
-		outtextxy(midx - 50, 40, "Jucator 1");
-		player = 2;
-
+	if (coloana2 == coloana1) {
+		if (TablaDeJoc[linia2][coloana2] == SPATIU)
+		{
+			if (linia2 < linia1) {
+				ok = 1;
+				for (int i = linia2; i < linia1; i++) {
+					if (TablaDeJoc[i][coloana2] == PIESA) ok = 0;
+				}
+				if (ok == 1) {
+					stopComputer = 0;
+					TablaDeJoc[linia1][coloana1] = SPATIU;
+					TablaDeJoc[linia2][coloana2] = PIESA;
+					stergePiesa(linia1, coloana1);
+					deseneazaPiesa(linia2, coloana2, PIESA);
+				}
+				else {
+					outtextxy(midx - 110, 80, "Nu sari alte piese! Te rog sa selectezi din nou o piesa.");
+				}
+			}
+			else {
+				outtextxy(midx - 110, 110, "Muta doar in sus! Te rog sa selectezi din nou o piesa.");
+			}
+		}
+		else {
+			outtextxy(midx - 110, 100, "Muta pe spatiile libere! Te rog sa selectezi din nou o piesa.");
+		}
 	}
 	else {
-		setcolor(FUNDAL);
-		outtextxy(midx - 50, 40, "Jucator 1");
-		setcolor(WHITE);
-		outtextxy(midx - 50, 40, "Jucator 2");
-		player = 1;
+		outtextxy(midx - 110, 80, "Muta doar pe verticala! Te rog sa selectezi din nou o piesa.");
 	}
+}
+void mutareAlDoileaJucator(int coloana1, int coloana2, int linia1, int linia2, int &ok) { //monica mutarea celui de-al doilea jucator
+	int midx;
+	midx = getmaxwidth() / 2;
+	if (linia2 == linia1) {
+		if (TablaDeJoc[linia2][coloana2] == SPATIU)
+		{
+			if (coloana2 > coloana1) {
+				ok = 1;
+				for (int i = coloana2; i > coloana1; i--) {
+					if (TablaDeJoc[linia2][i] == PIESA) ok = 0;
+				}
+				if (ok == 1) {
+					TablaDeJoc[linia1][coloana1] = SPATIU;
+					TablaDeJoc[linia2][coloana2] = PIESA;
+					stergePiesa(linia1, coloana1);
+					deseneazaPiesa(linia2, coloana2, PIESA);
+				}
+				else {
+					outtextxy(midx - 110, 80, "Nu sari alte piese! Te rog sa selectezi din nou o piesa.");
+				}
+			}
+			else {
+				outtextxy(midx - 110, 110, "Muta doar in dreapta! Te rog sa selectezi din nou o piesa.");
+			}
+		}
+		else {
+			outtextxy(midx - 110, 100, "Muta pe spatiile libere! Te rog sa selectezi din nou o piesa.");
+		}
+	}	
+	else {
+		outtextxy(midx - 110, 90, "Muta doar pe orizontala! Te rog sa selectezi din nou o piesa.");
+	}
+}
+
+void mutareCalculator() { //monica mutarea calculatorului
+	for (int i = 1;i <= numar;i++)
+		for (int j = 1;j < numar;j++)
+			if (TablaDeJoc[i][j] == PIESA && TablaDeJoc[i][j + 1] == SPATIU) {
+				TablaDeJoc[i][j] = SPATIU;
+				TablaDeJoc[i][j+1] = PIESA;
+				stergePiesa(i, j);
+				deseneazaPiesa(i, j+1, PIESA);
+				i = numar + 1; j = numar;
+			}
+}
+
+void verifCastigMutare(int ok, int &player) { //monica verifica player-ul care a castigat
+	int midx;
+	midx = getmaxwidth() / 2;
+	if (ok == 0)
+		if (player == 1) player = 2; //Al doilea jucator va avea din nou valoarea 2
+		else player = 1;
+	else
+		if (verifCastigator(player, PIESA) == 1)
+			if (player == 2) {
+				outtextxy(midx - 110, 90, "Player 1 a castigat."); stopComputer = 1; //oprim computer-ul din mutarea automata dupa ce a pierdut
+			}
+			else if (alegere == 2) outtextxy(midx - 110, 90, "Calculatorul a castigat.");
+			else outtextxy(midx - 110, 90, "Jucatorul 2 a castigat.");
+}
+void DisplayErrors() { //monica afisarea erorilor din mutari
+	int midx = getmaxwidth() / 2;
+	setcolor(FUNDAL);
+	outtextxy(midx - 90, 70, "Selecteaza un cerc");
+	outtextxy(midx - 110, 80, "Muta doar pe verticala! Te rog sa selectezi din nou o piesa.");
+	outtextxy(midx - 110, 90, "Muta doar pe orizontala! Te rog sa selectezi din nou o piesa.");
+	outtextxy(midx - 110, 100, "Muta pe spatiile libere! Te rog sa selectezi din nou o piesa.");
+	outtextxy(midx - 95, 110, "Muta doar in sus! Te rog sa selectezi din nou o piesa.");
+	outtextxy(midx - 100, 110, "Muta doar in dreapta! Te rog sa selectezi din nou o piesa.");
+	outtextxy(midx - 110, 80, "Nu sari alte piese! Te rog sa selectezi din nou o piesa.");
+	setcolor(WHITE);
+}
+void mutarePiesa(int codPiesa) //Monica - mutare piesa pentru ambele variante de joc + afisare jucatori
+{
+	int linia1, coloana1, linia2, coloana2, x, y, ok=0;
+	int x1, y1, x2, y2;
+	int xmijloc, ymijloc;
+	int midx = getmaxwidth() / 2;
+	bool mutareCorecta;
+
+	if (player == 1) player = 2;
+	else player = 1;
+	//inversam valorile
+
+
+	if (alegere == 1) { //jucator vs jucator
+		if (player == 1) {
+			setcolor(FUNDAL); outtextxy(midx - 50, 40, "Jucator 2"); //ascunzi textul Jucatorul 2
+			setcolor(WHITE); outtextxy(midx - 50, 40, "Jucator 1");
+		}
+		else {
+			setcolor(FUNDAL); outtextxy(midx - 50, 40, "Jucator 1"); //ascunzi textul Jucatorul 1
+			setcolor(WHITE); outtextxy(midx - 50, 40, "Jucator 2");
+		}
+	} //Afisam jucatorul curent pentru jucator vs jucator
+
 	do
 	{
 		
 		iesireUrgenta();
 		mutareCorecta = false;
-		if (ismouseclick(WM_LBUTTONDOWN) && inInterior(x = mousex(), y = mousey(), stanga, sus, stanga + width, sus + height))
-		{
-			setcolor(FUNDAL);
-			outtextxy(midx - 90, 70, "Selecteaza un cerc");
-			outtextxy(midx - 110, 80, "Muta doar pe verticala! Te rog sa selectezi din nou o piesa.");
-			outtextxy(midx - 110, 90, "Muta doar pe orizontala! Te rog sa selectezi din nou o piesa.");
-			outtextxy(midx - 110, 100, "Muta pe spatiile libere! Te rog sa selectezi din nou o piesa.");
-			outtextxy(midx - 95, 110, "Muta doar in sus! Te rog sa selectezi din nou o piesa.");
-			outtextxy(midx - 100, 110, "Muta doar in dreapta! Te rog sa selectezi din nou o piesa.");
-			outtextxy(midx - 110, 80, "Nu sari alte piese! Te rog sa selectezi din nou o piesa.");
-			setcolor(WHITE);
-
-			clearmouseclick(WM_LBUTTONDOWN);
-			// x=mousex(); y=mousey();
-			linia1 = (y - sus) / latura + 1;
-			coloana1 = (x - stanga) / latura + 1;
-			// cout<<linia1<<","<<coloana1<<"=>";
-			//circle(stanga+coloana1*latura+latura/2, sus+linia1*latura+latura/2,5);
-			if (TablaDeJoc[linia1][coloana1] == codPiesa)
+		if (alegere == 1) {
+			if (ismouseclick(WM_LBUTTONDOWN) && inInterior(x = mousex(), y = mousey(), stanga, sus, stanga + width, sus + height))
 			{
-				do
+				clearmouseclick(WM_LBUTTONDOWN);
+				DisplayErrors(); //ascunzi erorile
+				linia1 = (y - sus) / latura + 1;
+				coloana1 = (x - stanga) / latura + 1;
+				if (TablaDeJoc[linia1][coloana1] == codPiesa) //daca s-a selectat o piesa
 				{
-					iesireUrgenta();
-					if (ismouseclick(WM_LBUTTONDOWN) && inInterior(x = mousex(), y = mousey(), stanga, sus, stanga + width, sus + height))
+					do
 					{
-						clearmouseclick(WM_LBUTTONDOWN);
-						linia2 = (y - sus) / latura + 1;
-						coloana2 = (x - stanga) / latura + 1;
-
-						
-						int ok = 0;
-						if (player == 2) { //Primul jucator trebuie sa mearga pe verticala, player e 2 pentru ca au fost inversate la inceput
-							if (coloana2 == coloana1) {
-								if (TablaDeJoc[linia2][coloana2] == SPATIU)
-								{
-									if (linia2 < linia1) {
-										ok = 1;
-										for (int i = linia2; i < linia1; i++) {
-											if (TablaDeJoc[i][coloana2] == codPiesa) ok = 0;
-										}
-										if (ok == 1) {
-											mutareCorecta = true;
-											TablaDeJoc[linia1][coloana1] = SPATIU;
-											TablaDeJoc[linia2][coloana2] = codPiesa;
-											stergePiesa(linia1, coloana1);
-											deseneazaPiesa(linia2, coloana2, codPiesa);
-										}
-										else {
-											outtextxy(midx - 110, 80, "Nu sari alte piese! Te rog sa selectezi din nou o piesa.");
-										}
-									}
-									else {
-										outtextxy(midx - 110, 110, "Muta doar in sus! Te rog sa selectezi din nou o piesa.");
-									}
-								}
-								else {
-									outtextxy(midx - 110, 100, "Muta pe spatiile libere! Te rog sa selectezi din nou o piesa.");
-								}
+						iesireUrgenta();
+						int ok = 0; //resetam ok
+						if (ismouseclick(WM_LBUTTONDOWN) && inInterior(x = mousex(), y = mousey(), stanga, sus, stanga + width, sus + height))
+						{
+							clearmouseclick(WM_LBUTTONDOWN);
+							linia2 = (y - sus) / latura + 1;
+							coloana2 = (x - stanga) / latura + 1;
+							if (player == 2) { //Primul jucator trebuie sa mearga pe verticala, player e 2 pentru ca au fost inversate la inceput
+								mutarePrimulJucator(coloana1, coloana2, linia1, linia2, ok); //verifici daca e posibil sa muti si apoi muti
 							}
-							else {
-								outtextxy(midx - 110, 80, "Muta doar pe verticala! Te rog sa selectezi din nou o piesa.");
-							}
+							else
+								mutareAlDoileaJucator(coloana1, coloana2, linia1, linia2, ok);//verifici daca e posibil sa muti si apoi muti
+							mutareCorecta = true; //iesim din do
+							verifCastigMutare(ok, player); //verifici daca a castigat
 						}
-						else { //Al doilea jucator trebuie sa mearga pe orizontala
-							if (linia2 == linia1) {
-								if (TablaDeJoc[linia2][coloana2] == SPATIU)
-								{
-									if (coloana2 > coloana1) {
-										ok = 1;
-										for (int i = coloana2; i > coloana1; i--) {
-											if (TablaDeJoc[linia2][i] == codPiesa) ok = 0;
-										}
-										if (ok == 1) {
-											mutareCorecta = true;
-											TablaDeJoc[linia1][coloana1] = SPATIU;
-											TablaDeJoc[linia2][coloana2] = codPiesa;
-											stergePiesa(linia1, coloana1);
-											deseneazaPiesa(linia2, coloana2, codPiesa);
-										}
-										else {
-											outtextxy(midx - 110, 80, "Nu sari alte piese! Te rog sa selectezi din nou o piesa.");
-										}
-									}
-									else {
-										outtextxy(midx - 110, 110, "Muta doar in dreapta! Te rog sa selectezi din nou o piesa.");
-									}
-								}
-								else {
-									outtextxy(midx - 110, 100, "Muta pe spatiile libere! Te rog sa selectezi din nou o piesa.");
-								}
-							}
-							else {
-								outtextxy(midx - 110, 90, "Muta doar pe orizontala! Te rog sa selectezi din nou o piesa.");
-							}
-						}
-						mutareCorecta = true;
-						if (ok == 0)
-							if(player == 1) player = 2; //Al doilea jucator va avea din nou valoarea 2
-							else player = 1;
-						else 
-							if (verifCastigator(player, codPiesa) == 1) 
-								if (player == 2) {
-									outtextxy(midx - 110, 90, "Player 1 a castigat.");
-									/*Functie daca a castigat player 1*/
-								}
-								else
-								{
-									outtextxy(midx - 110, 90, "Player 2 a castigat.");
-									/* Functie daca a castigat player 2*/
-								}
-					}
-				} while (!mutareCorecta);
+					} while (!mutareCorecta);
+				}
+				else {
+					setcolor(WHITE);
+					outtextxy(midx - 90, 70, "Selecteaza un cerc");
+				}
 			}
-			else {
-				setcolor(WHITE);
-				outtextxy(midx - 90, 70, "Selecteaza un cerc");
+		}
+		else {
+			if (ismouseclick(WM_LBUTTONDOWN) && inInterior(x = mousex(), y = mousey(), stanga, sus, stanga + width, sus + height) && player == 2)
+			{ //daca e primul jucator si a dat click
+
+				clearmouseclick(WM_LBUTTONDOWN);
+				DisplayErrors(); //ascunzi erorile
+				linia1 = (y - sus) / latura + 1;
+				coloana1 = (x - stanga) / latura + 1;
+				if (TablaDeJoc[linia1][coloana1] == codPiesa)
+				{
+					do
+					{
+						iesireUrgenta();
+						int ok = 0; //resetam ok
+						if (ismouseclick(WM_LBUTTONDOWN) && inInterior(x = mousex(), y = mousey(), stanga, sus, stanga + width, sus + height))
+						{
+							clearmouseclick(WM_LBUTTONDOWN);
+							linia2 = (y - sus) / latura + 1;
+							coloana2 = (x - stanga) / latura + 1;
+							mutarePrimulJucator(coloana1, coloana2, linia1, linia2, ok);//verifici daca e posibil sa muti si apoi muti
+							mutareCorecta = true; //iesim din do
+							verifCastigMutare(ok, player); //verifici daca jucatorul a castigat si stopComputer se transforma in 1 astfel
+							//incat functia automata pentru a misca piesele de catre computer nu va mai putea fi accesata pentru ca
+							//computerul a pierdut
+						}
+					} while (!mutareCorecta);
+				}
+				else {
+					setcolor(WHITE);
+					outtextxy(midx - 90, 70, "Selecteaza un cerc");
+				}
+			}
+			else if (player == 1 && stopComputer == 0) {
+				mutareCalculator();
+				ok = 1; //mutarea e mereu corecta pentru ca e automata
+				verifCastigMutare(ok, player); //verifici daca a castigat calculatorul
+				player = 2; //trece la al doilea jucator fara a reseta mutareCorecta
 			}
 		}
 	} while (!mutareCorecta);
@@ -583,21 +644,12 @@ void meniu(int &alegere) {
 void initMeniu()
 {
 	meniu(alegere);
-	if (alegere == 1) {
-		initializariDimensiuni();
-		initTabla();
-		desenTabla();
-		
-		do {
-			mutarePiesa(PIESA);
-		} while (true);
-	}
-	if (alegere == 2) {
-		initializariDimensiuni();
-		initTabla();
-		desenTabla();
-		getch();
-	}
+	initializariDimensiuni();
+	initTabla();
+	desenTabla();
+	do {
+		mutarePiesa(PIESA);
+	} while (true);
 }
 int main()
 {
