@@ -36,7 +36,7 @@ void meniu(int &alegere);
 void initMeniu();
 int TablaDeJoc[MAX][MAX];
 
-void meniuScor() {
+void meniuScor() { //Monica - alt joc + iesire pentru fereastra cu scor
 	int midx, midy;
 	midx = getmaxwidth() / 2;
 	midy = getmaxheight() / 2;
@@ -156,7 +156,7 @@ void afisarescor() {
 	getch();
 }
 
-void culoarefundal() { //monica
+void culoarefundal() { //Monica - alege culoarea de fundal
 	cleardevice();
 
 	int midx, midy;
@@ -213,7 +213,7 @@ void culoarefundal() { //monica
 	initMeniu();
 }
 
-void culoarepiese() { //monica
+void culoarepiese() { //Monica - alege culoarea pieselor si a liniilor
 	cleardevice();
 
 	int midx, midy;
@@ -304,7 +304,7 @@ bool inInterior(int x, int y, int x1, int y1, int x2, int y2)
 }
 
 int verifCastigator(int player, int codPiesa) { //Monica - verifica daca a castigat player
-	if (player == 1) { //Verific pentru al doilea jucator
+	if (player == 1) { //Verific pentru primul jucator
 		for (int i = 2;i <= numar;i++)
 			for (int j = 1;j <= numar;j++)
 				if (TablaDeJoc[i][j] == PIESA && TablaDeJoc[i - 1][j] == SPATIU)
@@ -319,7 +319,7 @@ int verifCastigator(int player, int codPiesa) { //Monica - verifica daca a casti
 	return 1;
 }
 
-void mutarePrimulJucator(int coloana1, int coloana2, int linia1, int linia2, int &ok) { //monica mutarea primului jucator
+void mutarePrimulJucator(int coloana1, int coloana2, int linia1, int linia2, int &ok) { //Monica - mutarea primului jucator
 	int midx;
 	midx = getmaxwidth() / 2;
 	if (coloana2 == coloana1) {
@@ -353,7 +353,7 @@ void mutarePrimulJucator(int coloana1, int coloana2, int linia1, int linia2, int
 		outtextxy(midx - 300, 70, "Muta doar pe verticala! Te rog sa selectezi din nou o piesa.");
 	}
 }
-void mutareAlDoileaJucator(int coloana1, int coloana2, int linia1, int linia2, int &ok) { //monica mutarea celui de-al doilea jucator
+void mutareAlDoileaJucator(int coloana1, int coloana2, int linia1, int linia2, int &ok) { //Monica - mutarea celui de-al doilea jucator
 	int midx;
 	midx = getmaxwidth() / 2;
 	if (linia2 == linia1) {
@@ -451,7 +451,7 @@ void TerminareJoc() { //Monica - meniu pentru cand se termina jocul
 	}
 }
 
-void verifCastigMutare(int ok, int &player) { //monica verifica player-ul care a castigat
+void verifCastigMutare(int ok, int &player) { //Monica - verifica player-ul care a castigat
 	int midx;
 	midx = getmaxwidth() / 2;
 	if (ok == 0) //daca a fost vreo eroare luam de la capat
@@ -470,7 +470,7 @@ void verifCastigMutare(int ok, int &player) { //monica verifica player-ul care a
 			else outtextxy(midx - 110, 80, "Jucatorul 2 a castigat.");
 		}
 }
-void DisplayErrors() { //monica afisarea erorilor din mutari
+void DisplayErrors() { //Monica - afisarea erorilor din mutari
 	int midx = getmaxwidth() / 2;
 	setcolor(FUNDAL);
 	outtextxy(midx - 90, 70, "Selecteaza un cerc");
