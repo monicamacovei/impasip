@@ -2,6 +2,8 @@
 #include "winbgim.h"
 #include <stdlib.h>
 #include <fstream>
+#include <algorithm>
+#include <iterator>
 
 using namespace std;
 ifstream fin("pvp.txt");
@@ -34,6 +36,37 @@ void meniu(int &alegere);
 void initMeniu();
 int TablaDeJoc[MAX][MAX];
 
+void meniuScor() {
+	int midx, midy;
+	midx = getmaxwidth() / 2;
+	midy = getmaxheight() / 2;
+
+	rectangle(midx - 230, 850, midx - 10, 900);
+	outtextxy(midx - 185, (850 + 900) / 2 - 10, "Incepe un joc");
+
+	rectangle(midx + 20, 850, midx + 240, 900);
+	outtextxy(midx + 100, (850 + 900) / 2 - 10, "Iesire");
+
+	int x, y;
+	while (true) {
+		if (ismouseclick(WM_LBUTTONDOWN) != 0) {
+			clearmouseclick(WM_LBUTTONDOWN);
+			x = mousex();
+			y = mousey();
+
+			if ((x >= midx - 230 && x <= midx - 10 && y >= 850 && y <= 900) != 0) {//daca se alege sa se joace din nou
+				closegraph();
+				initwindow(getmaxwidth(), getmaxheight());
+				initMeniu();
+			}
+
+			if ((x >= midx + 20 && x <= midx + 240 && y >= 850 && y <= 900) != 0) {
+				closegraph();
+				break;
+			}
+		}
+	}
+}
 
 void resetarescor(int alegere) {
 	if (alegere == 1) {
@@ -61,6 +94,8 @@ void adaugarescor(int s1, int s2, int alegere) {
 
 void afisarescor() {
 	cleardevice();
+
+
 	int midx, midy;
 	midx = getmaxwidth() / 2;
 	midy = getmaxheight() / 2;
@@ -115,6 +150,8 @@ void afisarescor() {
 		j--;
 		jp += 20;
 	}
+
+	meniuScor();
 
 	getch();
 }
@@ -301,19 +338,19 @@ void mutarePrimulJucator(int coloana1, int coloana2, int linia1, int linia2, int
 					deseneazaPiesa(linia2, coloana2, PIESA);
 				}
 				else {
-					outtextxy(midx - 110, 70, "Nu sari alte piese! Te rog sa selectezi din nou o piesa.");
+					outtextxy(midx - 280, 70, "Nu sari alte piese! Te rog sa selectezi din nou o piesa.");
 				}
 			}
 			else {
-				outtextxy(midx - 110, 70, "Muta doar in sus! Te rog sa selectezi din nou o piesa.");
+				outtextxy(midx - 280, 70, "Muta doar in sus! Te rog sa selectezi din nou o piesa.");
 			}
 		}
 		else {
-			outtextxy(midx - 110, 70, "Muta pe spatiile libere! Te rog sa selectezi din nou o piesa.");
+			outtextxy(midx - 300, 70, "Muta pe spatiile libere! Te rog sa selectezi din nou o piesa.");
 		}
 	}
 	else {
-		outtextxy(midx - 110, 70, "Muta doar pe verticala! Te rog sa selectezi din nou o piesa.");
+		outtextxy(midx - 300, 70, "Muta doar pe verticala! Te rog sa selectezi din nou o piesa.");
 	}
 }
 void mutareAlDoileaJucator(int coloana1, int coloana2, int linia1, int linia2, int &ok) { //monica mutarea celui de-al doilea jucator
@@ -334,32 +371,42 @@ void mutareAlDoileaJucator(int coloana1, int coloana2, int linia1, int linia2, i
 					deseneazaPiesa(linia2, coloana2, PIESA);
 				}
 				else {
-					outtextxy(midx - 110, 70, "Nu sari alte piese! Te rog sa selectezi din nou o piesa.");
+					outtextxy(midx - 280, 70, "Nu sari alte piese! Te rog sa selectezi din nou o piesa.");
 				}
 			}
 			else {
-				outtextxy(midx - 110, 70, "Muta doar in dreapta! Te rog sa selectezi din nou o piesa.");
+				outtextxy(midx - 285, 70, "Muta doar in dreapta! Te rog sa selectezi din nou o piesa.");
 			}
 		}
 		else {
-			outtextxy(midx - 110, 70, "Muta pe spatiile libere! Te rog sa selectezi din nou o piesa.");
+			outtextxy(midx - 300, 70, "Muta pe spatiile libere! Te rog sa selectezi din nou o piesa.");
 		}
 	}	
 	else {
-		outtextxy(midx - 110, 70, "Muta doar pe orizontala! Te rog sa selectezi din nou o piesa.");
+		outtextxy(midx - 300, 70, "Muta doar pe orizontala! Te rog sa selectezi din nou o piesa.");
 	}
 }
 
-void mutareCalculator() { //monica mutarea calculatorului
-	for (int i = 1;i <= numar;i++)
-		for (int j = 1;j < numar;j++)
-			if (TablaDeJoc[i][j] == PIESA && TablaDeJoc[i][j + 1] == SPATIU) {
-				TablaDeJoc[i][j] = SPATIU;
-				TablaDeJoc[i][j+1] = PIESA;
-				stergePiesa(i, j);
-				deseneazaPiesa(i, j+1, PIESA);
-				i = numar + 1; j = numar;
+void mutareCalculator() { //Monica - mutarea calculatorului
+	int a[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+	std::random_shuffle(std::begin(a), std::end(a)); //linia sa fie random
+
+	int b[] = { 1, 2, 3, 4, 5, 6, 7, 8 };
+	std::random_shuffle(std::begin(b), std::end(b)); //coloana sa fie random
+
+	for (int i : a)
+		if (i <= numar) {
+			for (int j : b) {
+				if (j < numar) 
+					if (TablaDeJoc[i][j] == PIESA && TablaDeJoc[i][j + 1] == SPATIU) {
+						TablaDeJoc[i][j] = SPATIU;
+						TablaDeJoc[i][j + 1] = PIESA;
+						stergePiesa(i, j);
+						deseneazaPiesa(i, j + 1, PIESA);
+						return;
+					}
 			}
+		}
 }
 
 void TerminareJoc() { //Monica - meniu pentru cand se termina jocul
@@ -427,12 +474,12 @@ void DisplayErrors() { //monica afisarea erorilor din mutari
 	int midx = getmaxwidth() / 2;
 	setcolor(FUNDAL);
 	outtextxy(midx - 90, 70, "Selecteaza un cerc");
-	outtextxy(midx - 110, 70, "Muta doar pe verticala! Te rog sa selectezi din nou o piesa.");
-	outtextxy(midx - 110, 70, "Muta doar pe orizontala! Te rog sa selectezi din nou o piesa.");
-	outtextxy(midx - 110, 70, "Muta pe spatiile libere! Te rog sa selectezi din nou o piesa.");
-	outtextxy(midx - 95, 70, "Muta doar in sus! Te rog sa selectezi din nou o piesa.");
-	outtextxy(midx - 100, 70, "Muta doar in dreapta! Te rog sa selectezi din nou o piesa.");
-	outtextxy(midx - 110, 70, "Nu sari alte piese! Te rog sa selectezi din nou o piesa.");
+	outtextxy(midx - 300, 70, "Muta doar pe verticala! Te rog sa selectezi din nou o piesa.");
+	outtextxy(midx - 300, 70, "Muta doar pe orizontala! Te rog sa selectezi din nou o piesa.");
+	outtextxy(midx - 300, 70, "Muta pe spatiile libere! Te rog sa selectezi din nou o piesa.");
+	outtextxy(midx - 280, 70, "Muta doar in sus! Te rog sa selectezi din nou o piesa.");
+	outtextxy(midx - 285, 70, "Muta doar in dreapta! Te rog sa selectezi din nou o piesa.");
+	outtextxy(midx - 280, 70, "Nu sari alte piese! Te rog sa selectezi din nou o piesa.");
 	setcolor(WHITE);
 }
 void mutarePiesa(int codPiesa) //Monica - mutare piesa pentru ambele variante de joc + afisare jucatori
@@ -626,7 +673,6 @@ void initializariDimensiuni()
 }
 
 void meniu(int &alegere) { 
-
 	int midx, midy;
 	midx = getmaxwidth() / 2;
 	midy = getmaxheight() / 2;
